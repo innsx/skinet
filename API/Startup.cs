@@ -1,14 +1,20 @@
 
+using System.Linq;
+using API.Errors;
+using API.Extensions;
 using API.Helpers;
+using API.Middleware;
 using Core.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 namespace API
 {
@@ -30,20 +36,32 @@ namespace API
                 options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
-
             // Adding AutoMapper as a service
             services.AddAutoMapper(typeof(MappingProfiles));
+
+            // Adding a customized API Validation Error Response as a Service            
+            services.AddApplicationServices();
+
+            // adding Swagger as a service
+            services.AddSwaggerDocumentation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            //*****************************************
+            // comments this if statements & use our customized
+            // exceptionMiddleware statement below
+            //*****************************************
+            // if (env.IsDevelopment())
+            // {
+            //     app.UseDeveloperExceptionPage();
+            // }
+            app.UseMiddleware<ExceptionMiddleware>();
+
+            // Global-Error-Handler for ANY UNMATCHED StatusCode
+            // or DO NOT EXISTED ENDPOINT in ErrorController class
+            app.UseStatusCodePagesWithReExecute("/errors/{0}");
 
             app.UseHttpsRedirection();
 
@@ -52,6 +70,9 @@ namespace API
             app.UseStaticFiles();
 
             app.UseAuthorization();
+
+            // added swagger as a part of the middleware pipeline            
+            app.UseSwaggerDocumentation();
 
             app.UseEndpoints(endpoints =>
             {
