@@ -2,3 +2,8 @@ obj
 bin
 appsettings.json
 *.db
+ssl
+/dist
+/tmp
+/out-tsc
+/bazel-out

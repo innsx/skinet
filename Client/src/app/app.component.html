@@ -1,5 +1,21 @@
+<app-nav-bar></app-nav-bar>
 
-<h1>{{title}}</h1>
+<div class="container" style="margin-top: 140px;">
 
-<button class="btn btn-primary">BootStrap Button!</button>
+    <h1>{{title}}</h1>
+
+    <table>
+        <thead>
+            <td>Name</td>
+            <td>Price</td>        
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of products">
+                <td>{{item.name}}</td>
+                <td>{{item.price}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 <router-outlet></router-outlet>
