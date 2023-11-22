@@ -11,15 +11,30 @@ namespace Infrastructure.Data
         {
             var query = inputQuery;
             
+            // the ORDER of EXECUTION of "specifications" BELOW is VERY important
+            // ********************************************************************
             if (specifications.Criteria != null)
             {
-                query = query.Where(specifications.Criteria);
+                query = query.Where(specifications.Criteria); // Filtering expression: p => p.ProductTypeId == id
             }
 
-            query = specifications.Includes
-                        .Aggregate(query, 
-                                   (current, include) => current.Include(include)
-                                   );
+            if (specifications.OrderBy != null)
+            {
+                query = query.OrderBy(specifications.OrderBy); //sorting orderByAscending
+            }
+
+            if (specifications.OrderByDescending != null)
+            {
+                query = query.OrderByDescending(specifications.OrderByDescending); //sorting orderByDescending
+            }
+
+            if (specifications.IsPagingEnabled)
+            {
+                query = query.Skip(specifications.Skip).Take(specifications.Take); // executing paginations
+            }
+
+
+            query = specifications.Includes.Aggregate(query, (currentEntity, includeStatement) => currentEntity.Include(includeStatement));
 
             return query;        
         }
