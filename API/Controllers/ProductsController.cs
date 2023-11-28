@@ -75,7 +75,7 @@ namespace API.Controllers
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProductToReturnDto>> GetProduct([FromQuery] int id)
+        public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
             var specsToQuery = new ProductsWithTypesAndBrandsSpecification(id);
 
