@@ -1,3 +1,4 @@
+import { BreadcrumbService } from 'xng-breadcrumb';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { IProduct } from '../shared/models/product';
 import { HttpClient } from '@angular/common/http';
@@ -17,7 +18,7 @@ export class ShopComponent implements OnInit {
   // which the searchTerm is decorated as @ViewChild DECORATOR for
   // the PARENT ShopComponent to ACCESS
   // the CHILD INPUT control that has a search string referenced as 'searchTemplateRefVariable'
-  @ViewChild('searchTemplateRefVariable', {static: true}) searchTerm: ElementRef;
+  @ViewChild('searchTemplateRefVariable', {static: false}) searchTerm: ElementRef;
 
   products: IProduct[] = [];
   brands: IBrand[] = [];
@@ -34,6 +35,7 @@ export class ShopComponent implements OnInit {
   totalCount: number;
 
   constructor(private shopService: ShopService) {
+
   }
 
   ngOnInit(): void {
