@@ -11,11 +11,12 @@ using Microsoft.Extensions.DependencyInjection;
 namespace API.Extensions
 {
     public static class ApplicationServicesExtensions
-    {        
+    {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
+            services.AddScoped<IBasketRepository, BasketRepository>();
 
             // we wanted to override ApiController object to customize a specific error behavior
             // by checking if there is an error; if errors => extract erors
