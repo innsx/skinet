@@ -17,7 +17,8 @@ namespace API.Extensions
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped(typeof(IGenericRepository<>), (typeof(GenericRepository<>)));
             services.AddScoped<IBasketRepository, BasketRepository>();
-
+            services.AddScoped<ITokenService, TokenService>();
+            
             // we wanted to override ApiController object to customize a specific error behavior
             // by checking if there is an error; if errors => extract erors
             // & populate the error as an array of errors.

@@ -1,6 +1,9 @@
 using System.Threading.Tasks;
+using Core.Entities.Identity;
 using Infrastructure.Data;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,9 +33,20 @@ namespace API
 
                     // Seeding the Products, Brands, ProductTypes Tables
                     await StoreContextSeed.SeedAsync(context, loggerFactory);
+
+                    // from this program class, we pass in the UserManager into 
+                    // AppIdentityDbContextSeed class
+                    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                    var identityContext = services.GetRequiredService<AppIdentityDbContext>();
+
+                    // creating the database
+                    await identityContext.Database.MigrateAsync();
+
+                    // seeding the AppUser database
+                    await AppIdentityDbContextSeed.SeedUsersAsync(userManager);
                 }
                 catch (System.Exception ex)
-                {                    
+                {
                     // handling exceptions
                     var logger = loggerFactory.CreateLogger<Program>();
                     logger.LogError(ex, "An Error occured during migrations");

@@ -1,5 +1,6 @@
 using API.Errors;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 ///updated BuggyController USES ApiResponse.cs class to return a SPECIFIC HTTP Error message
@@ -71,6 +72,13 @@ namespace API.Controllers
                 return NotFound(errorMessage);
             }
             return Ok(thing);
+        }
+
+        [HttpGet("testAuth")]
+        [Authorize]
+        public ActionResult<string> GetSecretText() 
+        {
+            return "Super super super secret key12345678901234567890123456789012345678901234567890";
         }
     }
 }

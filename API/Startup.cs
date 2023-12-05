@@ -1,20 +1,13 @@
-
-using System.Linq;
-using API.Errors;
 using API.Extensions;
 using API.Helpers;
 using API.Middleware;
-using Core.Interfaces;
 using Infrastructure.Data;
-using Infrastructure.Services;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 
 namespace API
@@ -37,6 +30,11 @@ namespace API
                 options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
             });
 
+            services.AddDbContext<AppIdentityDbContext>(x => 
+            {
+                x.UseSqlite(_config.GetConnectionString("IdentityConnection"));
+            });
+
             // Adding AutoMapper as a service
             services.AddAutoMapper(typeof(MappingProfiles));
 
@@ -45,6 +43,9 @@ namespace API
 
             // adding Swagger as a service
             services.AddSwaggerDocumentation();
+
+            // IdentityServiceExtensions.cs class
+            services.AddIdentityServices(_config); 
 
             // Adding CORS: CROSS ORIGIN RESOURCES SHARING as a SERVICE
             services.AddCors(opt =>
@@ -60,7 +61,6 @@ namespace API
 
                 return ConnectionMultiplexer.Connect(configuration);
             });
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -86,7 +86,11 @@ namespace API
 
             app.UseStaticFiles();
 
-            app.UseCors("CorsPolicy"); // Implements CORS Service's policy
+            // Implements CORS Service's policy
+            app.UseCors("CorsPolicy"); 
+
+            // add Authentication in the Middleware pipeline
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
