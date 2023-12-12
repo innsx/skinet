@@ -49,7 +49,7 @@ export class BasketService {
     // ternary operator will ONLY work with TypeScript 3.7.0 or higher
     const basket = this.getCurrentBasketValue() ?? this.createBasket();
 
-    console.log('CurrentBasket/Create Basket: ', basket);
+    // console.log('CurrentBasket/Create Basket: ', basket);
 
     basket.items = this.addOrUpdateItem(basket.items, itemToAdd, quantity);
 
@@ -95,7 +95,7 @@ export class BasketService {
     // const subtotal = basket ? (basket.items.reduce((result, item) => (item.price * item.quantity) + result, 0)) : null;
     // console.log('subtotal: ', subtotal);
     const subtotal = basket ? basket.items.reduce((result, item) => (item.price * item.quantity) + result, 0) : 0;
-    console.log('subtotal: ', subtotal);
+    // console.log('subtotal: ', subtotal);
     const total = subtotal ? subtotal + shipping : 0;
 
     this.basketTotalSource.next({shipping, total, subtotal});
