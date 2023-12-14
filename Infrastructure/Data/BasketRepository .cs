@@ -7,7 +7,7 @@ using Core.Entities;
 using Core.Interfaces;
 using StackExchange.Redis;
 
-namespace Infrastructure.Services
+namespace Infrastructure.Data
 {
     public class BasketRepository : IBasketRepository
     {

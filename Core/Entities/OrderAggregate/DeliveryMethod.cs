@@ -1,0 +1,22 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Core.Entities.OrderAggregate
+{
+    /// <summary>
+    /// DeliveryMethod class model represented the shipping methods such as
+    /// USPS, UPS, FedEx, etc. to ship the ordered item
+    /// </summary>
+    public class DeliveryMethod : BaseEntity
+    {
+        public string ShortName { get; set; }
+
+        public string DeliveryTime { get; set; }
+
+        public string Description { get; set; }
+
+        public decimal Price { get; set; }
+    }
+}
