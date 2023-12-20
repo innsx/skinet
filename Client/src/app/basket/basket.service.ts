@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Basket, IBasket, IBasketItem, IBasketTotals } from '../shared/models/basket';
 import { IProduct } from '../shared/models/product';
+import { IDeliveryMethod } from '../shared/models/deliveryMethod';
 
 @Injectable({
   providedIn: 'root'
@@ -19,13 +20,15 @@ export class BasketService {
   private basketTotalSource = new BehaviorSubject<IBasketTotals>(null);
   basketTotal$ = this.basketTotalSource.asObservable();
 
+  shippingPrice = 0;
+
   constructor(private http: HttpClient) { }
 
   getBasket(id: string) {
     return this.http.get(this.baseUrl + 'basket?id=' + id).pipe(
       map((basket: IBasket) => {
         this.basketSource.next(basket);
-        // console.log('CurrentBasketValue: ', this.getCurrentBasketValue());
+        console.log('CurrentBasketValue: ', this.getCurrentBasketValue());
         this.calculateTotals();
       })
     );
@@ -39,7 +42,7 @@ export class BasketService {
     });
   }
 
-  getCurrentBasketValue() {
+  getCurrentBasketValue(): IBasket {
     return this.basketSource.value;
   }
 
@@ -91,10 +94,16 @@ export class BasketService {
 
   private calculateTotals() {
     const basket = this.getCurrentBasketValue();
-    const shipping = 0;
+
+    // after we added setShippingPrice(), we update this shipping variable to accept the
+    // return result that is assigned to the global shipping varialbe in setShippingPrice()
+    // const shipping = 0;
+    const shipping = this.shippingPrice;
+
     // const subtotal = basket ? (basket.items.reduce((result, item) => (item.price * item.quantity) + result, 0)) : null;
     // console.log('subtotal: ', subtotal);
     const subtotal = basket ? basket.items.reduce((result, item) => (item.price * item.quantity) + result, 0) : 0;
+
     // console.log('subtotal: ', subtotal);
     const total = subtotal ? subtotal + shipping : 0;
 
@@ -150,6 +159,17 @@ export class BasketService {
     }, error => {
       console.log(error);
     });
+  }
+
+  setShippingPrice(deliveryMethod: IDeliveryMethod) {
+    this.shippingPrice = deliveryMethod.price;
+    this.calculateTotals();
+  }
+
+  deleteLocalBasket(id: string) {
+    this.basketSource.next(null);
+    this.basketTotalSource.next(null);
+    localStorage.removeItem('basket_id');
   }
 }
 

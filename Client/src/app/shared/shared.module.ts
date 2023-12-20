@@ -3,16 +3,15 @@ import { CommonModule } from '@angular/common';
 import { PagingHeaderComponent } from './components/paging-header/paging-header.component';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { PagerComponent } from './components/pager/pager.component';
-// import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BsDropdownModule, CarouselModule } from 'ngx-bootstrap';
 import { OrderTotalComponent } from './components/order-total/order-total.component';
-import { ReactiveFormsModule } from '@angular/forms';
+// import { ReactiveFormsModule } from '@angular/forms';
 import { TextInputComponent } from './components/text-input/text-input.component';
-// import { CdkStepperModule } from 'node_modules/@angular/cdk/stepper';
-// import { StepperComponent } from './components/stepper/stepper.component';
-// import { BasketSummaryComponent } from './components/basket-summary/basket-summary.component';
-// import { RouterModule } from '@angular/router';
-
+import { CdkStepperModule } from 'node_modules/@angular/cdk/stepper';
+import { StepperComponent } from './components/stepper/stepper.component';
+import { BasketSummaryComponent } from './components/basket-summary/basket-summary.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
@@ -20,13 +19,17 @@ import { TextInputComponent } from './components/text-input/text-input.component
     PagingHeaderComponent,
     OrderTotalComponent,
     TextInputComponent,
+    StepperComponent,
+    BasketSummaryComponent,
   ],
   imports: [
     CommonModule,
     PaginationModule.forRoot(),
     CarouselModule,
     ReactiveFormsModule,
-    BsDropdownModule.forRoot()
+    BsDropdownModule.forRoot(),
+    CdkStepperModule,
+    RouterModule
   ],
   exports: [
     PaginationModule,
@@ -36,7 +39,10 @@ import { TextInputComponent } from './components/text-input/text-input.component
     OrderTotalComponent,
     ReactiveFormsModule,
     BsDropdownModule,
-    TextInputComponent
+    TextInputComponent,
+    CdkStepperModule,
+    StepperComponent,
+    BasketSummaryComponent
   ]
 })
 export class SharedModule { }

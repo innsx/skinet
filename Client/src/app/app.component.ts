@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
 
     this.accountService.loadCurrentUser(token).subscribe(
       (response) => {
-        console.log('User is Loaded or reloaded');
+        // console.log('User is Loaded or reloaded');
       },
       (error) => {
         console.error('Error: Failed to Load Logged User');
