@@ -19,7 +19,6 @@ export interface IOrder {
     status: string;
 }
 
-
 export interface IOrderItem {
     productId: number;
     productName: string;
