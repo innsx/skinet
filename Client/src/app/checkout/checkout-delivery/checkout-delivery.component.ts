@@ -24,7 +24,6 @@ export class CheckoutDeliveryComponent implements OnInit {
     this.checkoutService.getDeliveryMethods().subscribe((dm: IDeliveryMethod[]) => {
       this.deliveryMethods = dm;
     }, error => {
-      console.log('Delivery Methods Error', error);
     });
   }
 

@@ -20,6 +20,7 @@
     "fullTemplateTypeCheck": true,
     "strictInjectionParameters": true,    
     "strictTemplates": true,
-    "strictDomEventTypes": false
+    "strictDomEventTypes": false,
+    "strictInputTypes": false,
   }
 }

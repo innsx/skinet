@@ -13,11 +13,13 @@ namespace Infrastructure.Services
     {
         private readonly IBasketRepository _basketRespo;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IPaymentService _paymentService;
 
         // Since IBasketRepository belongs to Identity.db and NOT skinet.db
         // we'll keep it as another injection
-        public OrderService(IBasketRepository basketRespo, IUnitOfWork unitOfWork)
+        public OrderService(IBasketRepository basketRespo, IUnitOfWork unitOfWork, IPaymentService paymentService)
         {
+            _paymentService = paymentService;
             _unitOfWork = unitOfWork;
             _basketRespo = basketRespo;
         }
@@ -45,8 +47,22 @@ namespace Infrastructure.Services
             // calculate subtotal of ALL the ListOfOrderItems
             var subtotal = listOfOrderItems.Sum(item => item.Price * item.Quantity);
 
+            // Get an Order by paymentIntentId using OrderByPaymentIntentWithItemsSpecification class’ constructor
+            var spec = new OrderByPaymentIntentIdSpecification(basket.PaymentIntentId);
+
+            // Go to the Repository and get the Order that has this paymentIntentId
+            var existingOrder = await _unitOfWork.Repository<Order>().GetEntityWithSpec(spec);
+
+            // check if an Order exists
+            if (existingOrder != null) 
+            {
+                // Order existed, then DELETE this Order
+                _unitOfWork.Repository<Order>().Delete(existingOrder);
+                await _paymentService.CreateOrUpdatePaymentIntent(basket.PaymentIntentId);
+            }
+
             // create this Order using the Order parametered CONSTRUCTOR with this parameters
-            var order = new Order(listOfOrderItems, buyerEmail, shippToAddress, deliveryMethod, subtotal);
+            var order = new Order(listOfOrderItems, buyerEmail, shippToAddress, deliveryMethod, subtotal, basket.PaymentIntentId);
 
             // add the Order into the Repository using Unit of Work
             _unitOfWork.Repository<Order>().Add(order);
@@ -60,10 +76,6 @@ namespace Infrastructure.Services
             {
                 return null;
             }
-
-            // ELSE the SAVE to Database is COMPLETED
-            // next, delete the basket that has this PASSED-IN basketId
-            await _basketRespo.DeleteBasketAsync(basketId);
 
             // return the order
             return order;

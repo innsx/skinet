@@ -20,7 +20,7 @@ export class BasketService {
   private basketTotalSource = new BehaviorSubject<IBasketTotals>(null);
   basketTotal$ = this.basketTotalSource.asObservable();
 
-  shippingPrice = 0;
+  shipping = 0;
 
   constructor(private http: HttpClient) { }
 
@@ -28,6 +28,7 @@ export class BasketService {
     return this.http.get(this.baseUrl + 'basket?id=' + id).pipe(
       map((basket: IBasket) => {
         this.basketSource.next(basket);
+        this.shipping = basket.shippingPrice;
         console.log('CurrentBasketValue: ', this.getCurrentBasketValue());
         this.calculateTotals();
       })
@@ -57,7 +58,6 @@ export class BasketService {
     basket.items = this.addOrUpdateItem(basket.items, itemToAdd, quantity);
 
     this.setBasket(basket);
-
   }
 
   private mapProductItemBasketItem(item: IProduct, quantity: number): IBasketItem {
@@ -98,7 +98,7 @@ export class BasketService {
     // after we added setShippingPrice(), we update this shipping variable to accept the
     // return result that is assigned to the global shipping varialbe in setShippingPrice()
     // const shipping = 0;
-    const shipping = this.shippingPrice;
+    const shipping = this.shipping;
 
     // const subtotal = basket ? (basket.items.reduce((result, item) => (item.price * item.quantity) + result, 0)) : null;
     // console.log('subtotal: ', subtotal);
@@ -116,9 +116,9 @@ export class BasketService {
     // const foundItemIndex = basket?.items.findIndex(x => x.id === item.id);
 
     // basket ? (basket.items[foundItemIndex ? foundItemIndex : 0].quantity++) : null;
-
     basket.items[foundItemIndex].quantity ++;
     // basket.items[foundItemIndex ? foundItemIndex : 0].quantity ++;
+
     this.setBasket(basket);
   }
 
@@ -162,14 +162,32 @@ export class BasketService {
   }
 
   setShippingPrice(deliveryMethod: IDeliveryMethod) {
-    this.shippingPrice = deliveryMethod.price;
+    this.shipping = deliveryMethod.price;
+    const basket = this.getCurrentBasketValue();
+    basket.deliveryMethodId = deliveryMethod.id;
+    basket.shippingPrice = deliveryMethod.price;
     this.calculateTotals();
+    this.setBasket(basket);  // set the basket infor so when customer returns the basket info remain unchanged or is updated
   }
+
 
   deleteLocalBasket(id: string) {
     this.basketSource.next(null);
     this.basketTotalSource.next(null);
     localStorage.removeItem('basket_id');
   }
+
+  createPaymentIntent() {
+    // because this is a POST Request, we DO NOT have an object to past in as a body,
+    // so we needed to add an empty {} object as a empty body
+    return this.http.post(this.baseUrl + 'payments/' + this.getCurrentBasketValue().id, {})
+      .pipe(
+        map((basket: IBasket) => {
+          this.basketSource.next(basket);
+          // console.log('Current Basket: ', this.getCurrentBasketValue());
+        })
+      );
+  }
+
 }
 

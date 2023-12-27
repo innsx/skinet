@@ -21,6 +21,7 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IPaymentService, PaymentService>();
             
             // we wanted to override ApiController object to customize a specific error behavior
             // by checking if there is an error; if errors => extract erors

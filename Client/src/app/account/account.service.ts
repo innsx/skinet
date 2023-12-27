@@ -5,7 +5,7 @@ import { BehaviorSubject, ReplaySubject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { IUser } from '../shared/models/user';
-import { IAddress } from '../shared/models/Address';
+import { IAddress } from '../shared/models/address';
 
 @Injectable({
   providedIn: 'root'

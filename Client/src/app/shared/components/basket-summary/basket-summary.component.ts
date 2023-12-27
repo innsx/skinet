@@ -13,16 +13,14 @@ export class BasketSummaryComponent implements OnInit {
   @Output() decrement: EventEmitter<IBasketItem> = new EventEmitter<IBasketItem>();
   @Output() increment: EventEmitter<IBasketItem> = new EventEmitter<IBasketItem>();
   @Output() remove: EventEmitter<IBasketItem> = new EventEmitter<IBasketItem>();
-
   @Input() isBasket = true;
-  @Input() items: IBasket[];
 
-  basket$: Observable<IBasket>;
+  @Input() items: IOrderItem[] | IBasketItem[] = [];  // our items can be either an Array of IBasketItem or IOrderItem
+  @Input() isOrder = false;  // isOrder flag is used for styling the basket-summary table in the order-detailed
 
-  constructor(private basketService: BasketService) { }
+  constructor() { }
 
   ngOnInit(): void {
-    this.basket$ = this.basketService.basket$;
   }
 
   decrementItemQuantity(item: IBasketItem) {
@@ -38,16 +36,22 @@ export class BasketSummaryComponent implements OnInit {
   }
 }
 
+
+
 //   @Output() decrement: EventEmitter<IBasketItem> = new EventEmitter<IBasketItem>();
 //   @Output() increment: EventEmitter<IBasketItem> = new EventEmitter<IBasketItem>();
 //   @Output() remove: EventEmitter<IBasketItem> = new EventEmitter<IBasketItem>();
-//   @Input() isBasket = true;
-//   @Input() items: IBasketItem[] | IOrderItem[] = [];  // our items can be either an Array of IBasketItem or IOrderItem
-//   @Input() isOrder = false;  // isOrder flag is used for styling the basket-summary table in the order-detailed
 
-//   constructor() { }
+//   @Input() isBasket = true;
+//   // @Input() items: IBasket[];
+//   @Input() items: IBasketItem[] | IOrderItem[] = [];
+
+//   basket$: Observable<IBasket>;
+
+//   constructor(private basketService: BasketService) { }
 
 //   ngOnInit(): void {
+//     this.basket$ = this.basketService.basket$;
 //   }
 
 //   decrementItemQuantity(item: IBasketItem) {
