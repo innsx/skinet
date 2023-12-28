@@ -16,45 +16,121 @@ import { of } from 'rxjs';
 export class ShopService {
   private readonly baseUrl = environment.apiUrl;
 
+  products: IProduct[] = [];
+  brands: IBrand[] = [];
+  types: IType[] = [];
+
+  pagination = new Pagination();
+  shopParams = new ShopParams();
+
   constructor(private http: HttpClient) {
   }
 
-  getProducts(shopParams: ShopParams) {
+  getProducts(useCache: boolean) {
+    if (useCache === false){
+      this.products = [];
+    }
+
+    if (this.products.length > 0 && useCache === true){
+      const pageSize = this.products.length / this.shopParams.pageSize;
+
+      const pagesReceived = Math.ceil(pageSize);
+
+      if (this.shopParams.pageNumber <= pagesReceived){
+        const startingPage = ((this.shopParams.pageNumber - 1) * (this.shopParams.pageSize));
+
+        const endingPage = (this.shopParams.pageNumber * this.shopParams.pageSize);
+
+        this.pagination.data = this.products.slice(startingPage, endingPage);
+
+        return of(this.pagination);
+      }
+    }
+
     let params = new HttpParams();
 
-    if (shopParams.brandId !== 0){
-      params = params.append('brandId', shopParams.brandId.toString());
+    if (this.shopParams.brandId !== 0){
+      params = params.append('brandId', this.shopParams.brandId.toString());
     }
 
-    if (shopParams.typeId !== 0) {
-      params = params.append('typeId', shopParams.typeId.toString());
+    if (this.shopParams.typeId !== 0) {
+      params = params.append('typeId', this.shopParams.typeId.toString());
     }
 
-    if (shopParams.search) {
-      params = params.append('search', shopParams.search);
+    if (this.shopParams.search) {
+      params = params.append('search', this.shopParams.search);
     }
 
-    params = params.append('sort', shopParams.sort);
-    params = params.append('pageIndex', shopParams.pageNumber.toString());
-    params = params.append('pageSize', shopParams.pageSize.toString());
+    params = params.append('sort', this.shopParams.sort);
+    params = params.append('pageIndex', this.shopParams.pageNumber.toString());
+    params = params.append('pageSize', this.shopParams.pageSize.toString());
 
     return this.http.get<IPagination>(this.baseUrl + 'products', {observe: 'response', params})
       .pipe(
         map(response => {
-          return response.body;
+          this.products = [...this.products, ...response.body.data];
+          this.pagination = response.body as any;
+          return this.pagination;
         })
       );
   }
 
+  setShopParams(params: ShopParams) {
+    this.shopParams = params;
+  }
+
+
+  getShopParams() {
+    return this.shopParams;
+  }
+
   getBrands() {
-    return this.http.get<IBrand[]>(this.baseUrl + 'products/brands');
+    // first we check if there are any Brands
+    if (this.brands.length > 0) {
+
+      // then return Brands
+      return of(this.brands);
+    }
+
+    // else go to Service and get Brands and set the return response to brands Array
+    // then next time we wanted to get Brands, we should have Brands in our brands array
+    return this.http.get<IBrand[]>(this.baseUrl + 'products/brands').pipe(
+      map(response => {
+        this.brands = response;
+        return response;
+      })
+    );
   }
 
   getTypes() {
-    return this.http.get<IType[]>(this.baseUrl + 'products/types');
+    // first we check if there are any Types
+    if (this.types.length > 0){
+
+      // then return Types
+      return of(this.types);
+    }
+
+    // else go to Service and get Types and set the return response to types Array
+    // then next time we wanted to get Types, we should have Types in our types array
+    return this.http.get<IType[]>(this.baseUrl + 'products/types').pipe(
+      map(response => {
+        this.types = response;
+        return response;
+      })
+    );
+
   }
 
   getProduct(id: number) {
+    // first we get a Product by Id
+    const product = this.products.find(p => p.id === id);
+
+    // if Product was found with that Id, we return that product
+    if (product) {
+      return of(product);
+    }
+
+    // we go to API and get Product by Id
     return this.http.get<IProduct>(this.baseUrl + 'products/' + id);
   }
 

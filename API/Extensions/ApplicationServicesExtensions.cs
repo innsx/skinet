@@ -23,6 +23,8 @@ namespace API.Extensions
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IPaymentService, PaymentService>();
             
+            services.AddSingleton<IResponseCacheService, ResponseCacheService>();
+            
             // we wanted to override ApiController object to customize a specific error behavior
             // by checking if there is an error; if errors => extract erors
             // & populate the error as an array of errors.

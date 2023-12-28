@@ -31,8 +31,8 @@ namespace API.Controllers
             _productTypeRepo = productTypeRepo;
         }
 
-        // Product
-        [HttpGet()]
+        [Cached(600)] // cache for 600 seconds
+        [HttpGet()]        
         public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts([FromQuery] ProductSpecParams productParams)
         {
             var specsToQuery = new ProductsWithTypesAndBrandsSpecification(productParams);
@@ -72,10 +72,11 @@ namespace API.Controllers
             return Ok(productsWithPagination);
         }
 
+        [Cached(600)] // cache object for 600 seconds
         [HttpGet("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
+        public async Task<ActionResult<ProductToReturnDto>> GetProductById(int id)
         {
             var specsToQuery = new ProductsWithTypesAndBrandsSpecification(id);
 
@@ -106,6 +107,7 @@ namespace API.Controllers
             return Ok(productToReturnDto);
         }
 
+        [Cached(600)] // cache object for 600 seconds
         // productBrand
         [HttpGet("brands")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -120,7 +122,7 @@ namespace API.Controllers
         [HttpGet("brands/{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProductBrand>> GetProductBrand([FromQuery] int id)
+        public async Task<ActionResult<ProductBrand>> GetProductBrandById([FromQuery] int id)
         {
             var productBrand = await _productBrandRepo.GetByIdAsync(id);
 
@@ -134,6 +136,7 @@ namespace API.Controllers
             return Ok(productBrand);
         }
 
+        [Cached(600)] // cache object for 600 seconds
         // ProductTypes
         [HttpGet("types")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -148,7 +151,7 @@ namespace API.Controllers
         [HttpGet("types/{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ProductType>> GetProductType([FromQuery] int id)
+        public async Task<ActionResult<ProductType>> GetProductTypeById([FromQuery] int id)
         {
             var ProductType = await _productTypeRepo.GetByIdAsync(id);
 

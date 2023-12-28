@@ -19,6 +19,10 @@ export class LoadingInterceptor implements HttpInterceptor {
       return next.handle(request);
     }
 
+    if (request.method === 'DELETE') {
+      return next.handle(request);  // not INVOKING the loading icon
+    }
+
     if (request.url.includes('emailexists')) {
       this.busyService.busy(); // turning the loading icon ON
     }

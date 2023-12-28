@@ -6,7 +6,6 @@ import { PagerComponent } from './components/pager/pager.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BsDropdownModule, CarouselModule } from 'ngx-bootstrap';
 import { OrderTotalComponent } from './components/order-total/order-total.component';
-// import { ReactiveFormsModule } from '@angular/forms';
 import { TextInputComponent } from './components/text-input/text-input.component';
 import { CdkStepperModule } from 'node_modules/@angular/cdk/stepper';
 import { StepperComponent } from './components/stepper/stepper.component';
@@ -29,7 +28,8 @@ import { RouterModule } from '@angular/router';
     ReactiveFormsModule,
     BsDropdownModule.forRoot(),
     CdkStepperModule,
-    RouterModule
+    RouterModule,
+    FormsModule
   ],
   exports: [
     PaginationModule,
@@ -43,6 +43,7 @@ import { RouterModule } from '@angular/router';
     CdkStepperModule,
     StepperComponent,
     BasketSummaryComponent,
+    FormsModule
   ]
 })
 export class SharedModule { }
